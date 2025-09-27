@@ -35,6 +35,8 @@ async function loadUsers() {
 }
 
 async function addExpense() {
+  console.log("AddExpense triggered");
+
   let participantChecks = document.querySelectorAll("#participants input[type=checkbox]:checked");
   let selectedParticipants = Array.from(participantChecks).map(c => c.value);
 
@@ -47,6 +49,8 @@ async function addExpense() {
     participants: selectedParticipants
   };
 
+  console.log("Data to send:", data);
+
   try {
     let response = await fetch(API_URL, {
       method: "POST",
@@ -54,10 +58,15 @@ async function addExpense() {
       headers: { "Content-Type": "application/json" }
     });
 
+    console.log("Raw response:", response);
+
     let result = await response.json();
+    console.log("Parsed result:", result);
+
     document.getElementById("message").innerText =
       "✅ Expense added (ID: " + result.id + ")";
   } catch (err) {
+    console.error("Error submitting expense:", err);
     document.getElementById("message").innerText = "❌ Error: " + err;
   }
 }
