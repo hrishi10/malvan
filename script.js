@@ -1,4 +1,4 @@
-const API_URL = "YOUR_SCRIPT_WEBAPP_URL";
+const API_URL = "https://script.google.com/macros/s/AKfycbwokKf1Y1sQdKQH6KDYur1_NPdV80qzMdcTSpmm3OIn40ArTIPqOypXm7Y-OF9QqrPsbQ/exec";
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("expenseForm");
