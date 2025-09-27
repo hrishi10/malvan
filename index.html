@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Splitwise Lite - Add Expense</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>💰 Add Expense</h1>
+    <form id="expenseForm">
+      <label>Description</label>
+      <input type="text" id="desc" required>
+
+      <label>Amount</label>
+      <input type="number" id="amt" required>
+
+      <label>Paid By (UserID)</label>
+      <input type="text" id="paidBy" placeholder="e.g., U1" required>
+
+      <label>Share it with (UserIDs, comma separated)</label>
+      <input type="text" id="participants" placeholder="U1,U2,U3" required>
+
+      <button type="submit">Add Expense</button>
+    </form>
+    <p id="message"></p>
+    <a href="dashboard.html">📊 View Dashboard</a>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
