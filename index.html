@@ -16,6 +16,7 @@
       align-items: center;
       gap: 6px;
     }
+    button { padding: 10px 16px; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -41,33 +42,38 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzOfnc7GHLz5WzyxV5Gskfq0b8t9cqS2fAdlTh8ApSCwbuWdyKfmT3ftigmFqzh0bjAbg/exec"; // replace with your /exec URL
+    // ========================
+    // CONFIG: Replace with your Web App /exec URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbzOfnc7GHLz5WzyxV5Gskfq0b8t9cqS2fAdlTh8ApSCwbuWdyKfmT3ftigmFqzh0bjAbg/exec";
+    // ========================
 
+    // Load users from Google Sheets (GET /getUsers)
     async function loadUsers() {
       try {
         const res = await fetch(`${API_URL}?action=getUsers`);
         const users = await res.json();
 
-        // PaidBy dropdown
+        // Paid By dropdown
         const paidBySelect = document.getElementById("paidBy");
         users.forEach(u => {
           const opt = document.createElement("option");
-          opt.value = u.name;   // send Name, backend maps → ID
+          opt.value = u.name; // Name, backend converts → UserID
           opt.textContent = u.name;
           paidBySelect.appendChild(opt);
         });
 
-        // Participants list (checkboxes)
+        // Participants checkboxes
         const participantsDiv = document.getElementById("participants");
         users.forEach(u => {
           const label = document.createElement("label");
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
-          checkbox.value = u.name; // send Name, backend maps → ID
+          checkbox.value = u.name;
           label.appendChild(checkbox);
           label.appendChild(document.createTextNode(u.name));
           participantsDiv.appendChild(label);
         });
+
       } catch (err) {
         console.error("Error loading users:", err);
         document.getElementById("message").textContent =
@@ -75,12 +81,12 @@
       }
     }
 
+    // Submit Add Expense form (POST /addExpense)
     async function addExpense() {
       const desc = document.getElementById("desc").value;
       const amt = parseFloat(document.getElementById("amt").value);
       const paidBy = document.getElementById("paidBy").value;
 
-      // Collect selected participants
       const participants = Array.from(
         document.querySelectorAll("#participants input:checked")
       ).map(cb => cb.value);
@@ -92,7 +98,7 @@
 
       const payload = {
         action: "addExpense",
-        group: "Malvana Trip",  // hardcoded group
+        group: "Malvana Trip",
         description: desc,
         amount: amt,
         paidBy: paidBy,
@@ -118,9 +124,11 @@
       }
     }
 
+    // Event listeners
     document.addEventListener("DOMContentLoaded", () => {
       loadUsers();
-      document.getElementById("expenseForm").addEventListener("submit", async (e) => {
+      const form = document.getElementById("expenseForm");
+      form.addEventListener("submit", async e => {
         e.preventDefault();
         await addExpense();
       });
