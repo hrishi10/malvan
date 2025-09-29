@@ -4,6 +4,19 @@
   <meta charset="UTF-8">
   <title>Splitwise Lite - Add Expense</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .participants-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 8px 0;
+    }
+    .participants-list label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -21,29 +34,97 @@
       <label>Share it with</label>
       <div id="participants" class="participants-list"></div>
 
-
       <button type="submit">Add Expense</button>
     </form>
     <p id="message"></p>
     <a href="dashboard.html">📊 View Dashboard</a>
   </div>
-  <script src="script.js"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", loadUsers);
-  </script>
+    const API_URL = "YOUR_WEB_APP_URL_HERE"; // replace with your /exec URL
 
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("expenseForm");
-    if (form) {
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault(); // prevent page reload
+    async function loadUsers() {
+      try {
+        const res = await fetch(`${API_URL}?action=getUsers`);
+        const users = await res.json();
+
+        // PaidBy dropdown
+        const paidBySelect = document.getElementById("paidBy");
+        users.forEach(u => {
+          const opt = document.createElement("option");
+          opt.value = u.name;   // send Name, backend maps → ID
+          opt.textContent = u.name;
+          paidBySelect.appendChild(opt);
+        });
+
+        // Participants list (checkboxes)
+        const participantsDiv = document.getElementById("participants");
+        users.forEach(u => {
+          const label = document.createElement("label");
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = u.name; // send Name, backend maps → ID
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(u.name));
+          participantsDiv.appendChild(label);
+        });
+      } catch (err) {
+        console.error("Error loading users:", err);
+        document.getElementById("message").textContent =
+          "⚠️ Failed to load users. Check API URL.";
+      }
+    }
+
+    async function addExpense() {
+      const desc = document.getElementById("desc").value;
+      const amt = parseFloat(document.getElementById("amt").value);
+      const paidBy = document.getElementById("paidBy").value;
+
+      // Collect selected participants
+      const participants = Array.from(
+        document.querySelectorAll("#participants input:checked")
+      ).map(cb => cb.value);
+
+      if (participants.length === 0) {
+        document.getElementById("message").textContent = "⚠️ Select at least one participant.";
+        return;
+      }
+
+      const payload = {
+        action: "addExpense",
+        group: "Malvana Trip",  // hardcoded group
+        description: desc,
+        amount: amt,
+        paidBy: paidBy,
+        participants: participants
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+          document.getElementById("message").textContent = "✅ Expense added!";
+          document.getElementById("expenseForm").reset();
+        } else {
+          document.getElementById("message").textContent = "⚠️ Error: " + data.message;
+        }
+      } catch (err) {
+        document.getElementById("message").textContent = "⚠️ Network error: " + err.message;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadUsers();
+      document.getElementById("expenseForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
         await addExpense();
       });
-    }
-  });
-</script>
-
+    });
+  </script>
 </body>
 </html>
