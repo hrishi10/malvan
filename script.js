@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyMtQ35NGiEoi5jjYqCsUEMNUbadjEBa0277uQGjjhM3fjgYuJNAbV8lVibxcsY3-3kvA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzOfnc7GHLz5WzyxV5Gskfq0b8t9cqS2fAdlTh8ApSCwbuWdyKfmT3ftigmFqzh0bjAbg/exec";
 
 async function loadUsers() {
   try {
